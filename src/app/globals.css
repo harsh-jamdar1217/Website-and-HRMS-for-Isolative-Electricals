@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { background: #f3f5f4; color: #1b2631; -webkit-text-size-adjust: 100%; }
+  body { @apply font-sans antialiased; line-height: 1.55; }
+  h1, h2, h3 { @apply font-semibold text-navy; letter-spacing: -0.01em; line-height: 1.2; }
+  :focus-visible { outline: 3px solid #E3A008; outline-offset: 2px; }
+  a { @apply text-navy; }
+  ::selection { background: #E3A008; color: #12324A; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-page px-5 sm:px-8; }
+
+  /* Controls: small, consistent radius; the "technical" feel comes from rules and structure, not decoration. */
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-2.5 text-[15px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60; min-height: 44px; }
+  .btn-primary { @apply bg-navy text-white hover:bg-navy-700; }
+  .btn-accent { @apply bg-amber text-navy hover:bg-[#F0AE17]; }
+  .btn-ghost { @apply border border-navy/40 bg-transparent text-navy hover:bg-navy/5; }
+  .btn-danger { @apply bg-danger text-white hover:bg-[#8F1F19]; }
+  .btn-sm { @apply px-3 py-1.5 text-sm; min-height: 36px; }
+
+  .label { @apply mb-1.5 block text-sm font-semibold text-ink; }
+  .hint { @apply mt-1 text-sm text-steel; }
+  .input { @apply w-full rounded-sm border border-steel/50 bg-white px-3 py-2.5 text-[15px] text-ink placeholder:text-steel/70; min-height: 44px; }
+  .input[aria-invalid="true"] { @apply border-danger; box-shadow: inset 3px 0 0 #B3261E; }
+  .err { @apply mt-1.5 text-sm font-medium text-danger; }
+
+  .panel { @apply border border-line bg-white; }
+  .rule-top { @apply border-t-2 border-navy; }
+
+  .badge { @apply inline-flex items-center rounded-sm border px-2 py-0.5 text-xs font-semibold; }
+  .badge-NEW { @apply border-amber-700 bg-amber/20 text-[#6B4E00]; }
+  .badge-IN_PROGRESS { @apply border-navy/50 bg-navy-50 text-navy; }
+  .badge-RESPONDED { @apply border-ok/50 bg-ok/10 text-ok; }
+  .badge-CONVERTED { @apply border-ok bg-ok text-white; }
+  .badge-CLOSED { @apply border-line bg-sheet text-steel; }
+  .badge-SENT, .badge-LOGGED { @apply border-ok/50 bg-ok/10 text-ok; }
+  .badge-FAILED { @apply border-danger/50 bg-danger/10 text-danger; }
+  .badge-PENDING { @apply border-line bg-sheet text-steel; }
+
+  .tbl { @apply w-full border-collapse text-left text-sm; }
+  .tbl th { @apply border-b-2 border-navy bg-white px-3 py-2.5 text-xs font-semibold text-steel; }
+  .tbl td { @apply border-b border-line px-3 py-3 align-top; }
+  .tbl tbody tr:hover { background: #f8faf9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
