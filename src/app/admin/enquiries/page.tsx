@@ -46,7 +46,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
                 <tr key={e.id}>
                   <td className="whitespace-nowrap font-mono"><Link href={`/admin/enquiries/${e.id}`}>{e.reference}</Link></td>
                   <td>{e.name}{e.company && <span className="block text-xs text-steel">{e.company}</span>}</td>
-                  <td>{ENQUIRY_CATEGORIES[e.category as keyof typeof ENQUIRY_CATEGORIES] ?? e.category}</td>
+                  <td>{ENQUIRY_CATEGORIES[e.category as keyof typeof ENQUIRY_CATEGORIES] ?? e.category}{e.itemTitle && <span className="block text-xs text-steel">{e.itemTitle}</span>}</td>
                   <td><StatusBadge status={e.status} /></td>
                   <td>{assigneeName ?? <span className="text-steel">Unassigned</span>}</td>
                   <td className="whitespace-nowrap">{fmtDateTime(e.createdAt)}</td>

@@ -8,6 +8,7 @@ import { SubmitButton } from "@/components/ui";
 import { db, schema } from "@/db";
 import { requirePermission } from "@/lib/auth";
 import { getEnquiryDetail } from "@/lib/enquiries";
+import { getItemById } from "@/lib/catalogue";
 import { fmtDate, fmtDateTime, toDateInput } from "@/lib/format";
 import { can } from "@/lib/permissions";
 import { ENQUIRY_CATEGORIES, ENQUIRY_STATUS_LABEL, ENQUIRY_TRANSITIONS, type EnquiryStatus } from "@/lib/status";
@@ -24,6 +25,7 @@ export default async function EnquiryDetail({ params, searchParams }: { params: 
   if (!d) notFound();
   const { ok, err } = await searchParams;
   const { e } = d;
+  const asked = e.catalogueItemId ? getItemById(e.catalogueItemId) : null;
   const canManage = can(user.role, "enquiry:manage");
   const admins = db.select().from(schema.users).where(and(eq(schema.users.role, "ADMIN"), eq(schema.users.isActive, true))).all();
   const next = ENQUIRY_TRANSITIONS[e.status as EnquiryStatus] ?? [];
@@ -50,6 +52,7 @@ export default async function EnquiryDetail({ params, searchParams }: { params: 
                 ["Email", <a key="m" href={`mailto:${e.email}`}>{e.email}</a>],
                 ["Phone", e.phone ?? "-"],
                 ["Type", ENQUIRY_CATEGORIES[e.category as keyof typeof ENQUIRY_CATEGORIES] ?? e.category],
+                ["Asked about", e.itemTitle ? (asked && asked.status === "PUBLISHED" ? <Link key="it" href={`/products/${asked.slug}`}>{e.itemTitle}</Link> : e.itemTitle) : "General enquiry"],
                 ["Privacy notice accepted", fmtDateTime(e.consentAt)],
               ].map(([k, v]) => (<div key={String(k)}><dt className="text-xs font-semibold text-steel">{k}</dt><dd>{v}</dd></div>))}
             </dl>

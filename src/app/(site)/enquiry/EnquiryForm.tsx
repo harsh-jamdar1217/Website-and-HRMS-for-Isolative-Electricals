@@ -7,7 +7,7 @@ import { ENQUIRY_CATEGORIES } from "@/lib/status";
 
 const initial: EnquiryState = {};
 
-export function EnquiryForm({ defaultCategory }: { defaultCategory: string }) {
+export function EnquiryForm({ defaultCategory, itemSlug, itemTitle }: { defaultCategory: string; itemSlug?: string; itemTitle?: string }) {
   const [state, action] = useActionState(submitEnquiry, initial);
   const e = state.errors ?? {};
   const v = state.values ?? {};
@@ -15,6 +15,8 @@ export function EnquiryForm({ defaultCategory }: { defaultCategory: string }) {
 
   return (
     <form action={action} noValidate className="space-y-5">
+      {itemSlug && <input type="hidden" name="item" value={itemSlug} />}
+      {itemTitle && <p className="border-l-4 border-amber bg-sheet p-3 text-sm">Regarding: <strong>{itemTitle}</strong></p>}
       {state.formError && <div role="alert" className="border border-danger bg-danger/10 p-3 text-sm font-medium text-danger">{state.formError}</div>}
       {Object.keys(e).length > 0 && <div role="alert" className="border border-danger bg-danger/10 p-3 text-sm font-medium text-danger">Check the highlighted fields and send again.</div>}
 

@@ -89,3 +89,16 @@ export const employeeDetailsSchema = z.object({
   emergencyRelation: z.string().trim().min(2, "Enter their relationship to you.").max(50),
   emergencyPhone: phone,
 });
+
+export const catalogueSchema = z.object({
+  title: z.string().trim().min(3, "Enter a title of at least 3 characters.").max(120, "Keep the title under 120 characters."),
+  category: z.string().trim().min(2, "Enter a category.").max(60, "Keep the category under 60 characters."),
+  kind: z.enum(["SERVICE", "PRODUCT"], { message: "Choose service or product." }),
+  summary: z.string().trim().min(20, "The summary needs at least 20 characters.").max(300, "Keep the summary under 300 characters."),
+  description: z.string().trim().min(30, "The description needs at least 30 characters.").max(4000, "Keep the description under 4000 characters."),
+  highlights: z.string().max(3000).optional().or(z.literal("")),
+  applications: z.string().max(3000).optional().or(z.literal("")),
+  facts: z.string().max(2000).optional().or(z.literal("")),
+  imagePath: z.string().trim().max(120).optional().or(z.literal("")),
+  sortOrder: z.coerce.number().int("Order must be a whole number.").min(0).max(999),
+});

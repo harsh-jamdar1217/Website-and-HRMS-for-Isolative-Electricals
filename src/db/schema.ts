@@ -56,6 +56,8 @@ export const enquiries = sqliteTable(
     assigneeId: text("assignee_id").references(() => users.id, { onDelete: "set null" }),
     followUpDate: integer("follow_up_date", { mode: "timestamp_ms" }),
     consentAt: integer("consent_at", { mode: "timestamp_ms" }).notNull(), // privacy-notice acceptance time
+    catalogueItemId: text("catalogue_item_id"), // the product/service page the visitor asked from (no FK constraint: items can be removed without touching history)
+    itemTitle: text("item_title"), // snapshot of the title at the time, so history stays readable
     dedupeKey: text("dedupe_key").notNull(), // hash(email + message) to absorb double submissions
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -339,6 +341,32 @@ export const meetingParticipants = sqliteTable(
   (t) => [uniqueIndex("meeting_participant_uq").on(t.meetingId, t.email), index("meeting_participant_user_idx").on(t.userId)],
 );
 
+// ---------------------------------------------------------------------------
+// Phase 5: products and services catalogue (admin-editable)
+// ---------------------------------------------------------------------------
+
+export const catalogueItems = sqliteTable(
+  "catalogue_items",
+  {
+    id: id(),
+    slug: text("slug").notNull(), // stable public URL: /products/<slug>
+    title: text("title").notNull(),
+    category: text("category").notNull(), // group heading on the products page
+    kind: text("kind").notNull().default("SERVICE"), // SERVICE | PRODUCT
+    summary: text("summary").notNull(), // one or two sentences for the listing card
+    description: text("description").notNull(),
+    highlights: text("highlights"), // one bullet per line: "What is included"
+    applications: text("applications"), // one per line: industries / places where it is used
+    facts: text("facts"), // one "Label: value" per line
+    imagePath: text("image_path"), // optional, must be a file under /public/catalogue
+    status: text("status").notNull().default("DRAFT"), // DRAFT | PUBLISHED
+    sortOrder: integer("sort_order").notNull().default(100),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("catalogue_slug_uq").on(t.slug), index("catalogue_status_idx").on(t.status, t.category, t.sortOrder)],
+);
+
 export type User = typeof users.$inferSelect;
 export type Enquiry = typeof enquiries.$inferSelect;
 export type EnquiryNote = typeof enquiryNotes.$inferSelect;
@@ -354,3 +382,4 @@ export type Employee = typeof employees.$inferSelect;
 export type OnboardingTask = typeof onboardingTasks.$inferSelect;
 export type Meeting = typeof meetings.$inferSelect;
 export type MeetingParticipant = typeof meetingParticipants.$inferSelect;
+export type CatalogueItem = typeof catalogueItems.$inferSelect;

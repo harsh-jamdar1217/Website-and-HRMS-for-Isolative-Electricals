@@ -24,7 +24,7 @@ export async function submitEnquiry(_prev: EnquiryState, formData: FormData): Pr
   const d = parsed.data;
   let reference: string;
   try {
-    const { enquiry } = await createEnquiry({ name: d.name, company: d.company || undefined, email: d.email, phone: d.phone || undefined, category: d.category as EnquiryCategory, message: d.message });
+    const { enquiry } = await createEnquiry({ name: d.name, company: d.company || undefined, email: d.email, phone: d.phone || undefined, category: d.category as EnquiryCategory, message: d.message, itemSlug: raw.item || undefined });
     reference = enquiry.reference;
   } catch (e) {
     console.error("[enquiry] create failed", e);

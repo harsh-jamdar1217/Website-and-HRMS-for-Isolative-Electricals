@@ -4,6 +4,7 @@ import { db, schema } from "../src/db";
 import { hashPassword } from "../src/lib/password";
 import { createEnquiry } from "../src/lib/enquiries";
 import { createVacancy, setVacancyStatus } from "../src/lib/recruitment";
+import { seedCatalogue } from "../src/lib/catalogue";
 
 async function upsertUser(email: string, name: string, role: string, password: string) {
   const existing = db.select().from(schema.users).where(eq(schema.users.email, email)).get();
@@ -38,6 +39,8 @@ async function main() {
     setVacancyStatus(v2.id, "PUBLISHED", hr.id);
     createVacancy({ title: "Accounts Assistant (Demo draft)", location: "Khandala, Satara", employmentType: "FULL_TIME", description: "DEMO DRAFT. Not visible on the website until published.", eligibility: "Commerce graduate." }, hr.id);
   }
+  const added = seedCatalogue(true);
+  if (added) console.log(`Seeded ${added} products and services from the company's IndiaMART profile.`);
   console.log("Seed complete.\n  admin@isolative.example / (SEED_ADMIN_PASSWORD)\n  hr@isolative.example / (SEED_HR_PASSWORD)");
 }
 main();

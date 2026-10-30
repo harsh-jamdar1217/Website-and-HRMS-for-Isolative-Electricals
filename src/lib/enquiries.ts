@@ -5,6 +5,7 @@ import { audit } from "./audit";
 import { sendEmail } from "./email";
 import { enquiryAcknowledgement, enquiryAdminNotification } from "./email-templates";
 import { canTransition, isEnquiryStatus, type EnquiryCategory } from "./status";
+import { getPublishedBySlug } from "./catalogue";
 
 const { enquiries, enquiryNotes, clients, users } = schema;
 
@@ -17,12 +18,14 @@ export function generateReference(now = new Date()): string {
   return `ENQ-${now.getFullYear()}-${s}`;
 }
 
-export function dedupeKey(email: string, message: string): string {
-  return createHash("sha256").update(`${email.toLowerCase()}|${message.trim().replace(/\s+/g, " ").toLowerCase()}`).digest("hex");
+export function dedupeKey(email: string, message: string, itemId?: string | null): string {
+  return createHash("sha256").update(`${email.toLowerCase()}|${itemId ?? ""}|${message.trim().replace(/\s+/g, " ").toLowerCase()}`).digest("hex");
 }
 
 export type NewEnquiry = {
   name: string; company?: string; email: string; phone?: string; category: EnquiryCategory; message: string;
+  /** Slug of the product/service page the visitor was on (ignored if it is not a published item). */
+  itemSlug?: string;
 };
 
 /**
@@ -31,7 +34,8 @@ export type NewEnquiry = {
  * Email problems never undo the stored enquiry (failures are visible in the Email Log).
  */
 export async function createEnquiry(input: NewEnquiry) {
-  const key = dedupeKey(input.email, input.message);
+  const item = input.itemSlug ? getPublishedBySlug(input.itemSlug) : null; // only real, published items can be referenced
+  const key = dedupeKey(input.email, input.message, item?.id);
   const existing = db
     .select()
     .from(enquiries)
@@ -53,6 +57,8 @@ export async function createEnquiry(input: NewEnquiry) {
           category: input.category,
           message: input.message,
           consentAt: new Date(),
+          catalogueItemId: item?.id ?? null,
+          itemTitle: item?.title ?? null,
           dedupeKey: key,
         })
         .returning()
@@ -66,11 +72,11 @@ export async function createEnquiry(input: NewEnquiry) {
   audit({ actorId: null, action: "enquiry.created", entityType: "enquiry", entityId: enquiry.id, details: { reference: enquiry.reference, category: enquiry.category } });
 
   const base = process.env.APP_URL ?? "http://localhost:3000";
-  const ack = enquiryAcknowledgement({ name: enquiry.name, reference: enquiry.reference });
+  const ack = enquiryAcknowledgement({ name: enquiry.name, reference: enquiry.reference, regarding: enquiry.itemTitle });
   await sendEmail({ to: enquiry.email, template: "enquiry_ack", ...ack, idempotencyKey: `enquiry_ack:${enquiry.id}`, relatedType: "enquiry", relatedId: enquiry.id });
   const adminMail = enquiryAdminNotification({
     reference: enquiry.reference, name: enquiry.name, company: enquiry.company, email: enquiry.email,
-    category: enquiry.category as EnquiryCategory, message: enquiry.message, url: `${base}/admin/enquiries/${enquiry.id}`,
+    category: enquiry.category as EnquiryCategory, message: enquiry.message, regarding: enquiry.itemTitle, url: `${base}/admin/enquiries/${enquiry.id}`,
   });
   await sendEmail({
     to: process.env.ADMIN_NOTIFY_EMAIL ?? "admin@isolative.example", template: "enquiry_admin_notify", ...adminMail,

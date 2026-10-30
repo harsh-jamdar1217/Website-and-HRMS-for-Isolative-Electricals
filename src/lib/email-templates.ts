@@ -12,25 +12,25 @@ export const wrap = (title: string, bodyHtml: string) => `<!doctype html><html><
 <tr><td style="padding:14px 24px;border-top:1px solid #c9d1d5;font-size:12px;color:#52606d">This is an automated message. ${esc(company.registeredAddress)}</td></tr>
 </table></td></tr></table></body></html>`;
 
-export function enquiryAcknowledgement(p: { name: string; reference: string }) {
+export function enquiryAcknowledgement(p: { name: string; reference: string; regarding?: string | null }) {
   const subject = `We received your enquiry (${p.reference})`;
-  const text = `Hello ${p.name},\n\nThank you for contacting ${company.legalName}. Your enquiry reference is ${p.reference}.\nOur team will review it and reply by email. Please quote the reference in any follow-up.\n\n${company.legalName}`;
+  const text = `Hello ${p.name},\n\nThank you for contacting ${company.legalName}. Your enquiry reference is ${p.reference}.${p.regarding ? `\nRegarding: ${p.regarding}.` : ""}\nOur team will review it and reply by email. Please quote the reference in any follow-up.\n\n${company.legalName}`;
   const html = wrap(
     "We received your enquiry",
-    `<p>Hello ${esc(p.name)},</p><p>Thank you for contacting ${esc(company.legalName)}. Your enquiry reference is <strong>${esc(p.reference)}</strong>.</p><p>Our team will review it and reply by email. Please quote the reference in any follow-up.</p>`,
+    `<p>Hello ${esc(p.name)},</p><p>Thank you for contacting ${esc(company.legalName)}. Your enquiry reference is <strong>${esc(p.reference)}</strong>.</p>${p.regarding ? `<p>Regarding: <strong>${esc(p.regarding)}</strong></p>` : ""}<p>Our team will review it and reply by email. Please quote the reference in any follow-up.</p>`,
   );
   return { subject, text, html };
 }
 
 export function enquiryAdminNotification(p: {
-  reference: string; name: string; company: string | null; email: string; category: EnquiryCategory; message: string; url: string;
+  reference: string; name: string; company: string | null; email: string; category: EnquiryCategory; message: string; url: string; regarding?: string | null;
 }) {
   const cat = ENQUIRY_CATEGORIES[p.category];
   const subject = `New enquiry ${p.reference}: ${cat}`;
-  const text = `New enquiry ${p.reference}\nFrom: ${p.name}${p.company ? ` (${p.company})` : ""} <${p.email}>\nType: ${cat}\n\n${p.message}\n\nOpen: ${p.url}`;
+  const text = `New enquiry ${p.reference}\nFrom: ${p.name}${p.company ? ` (${p.company})` : ""} <${p.email}>\nType: ${cat}${p.regarding ? `\nRegarding: ${p.regarding}` : ""}\n\n${p.message}\n\nOpen: ${p.url}`;
   const html = wrap(
     `New enquiry ${p.reference}`,
-    `<p><strong>${esc(p.name)}</strong>${p.company ? ` (${esc(p.company)})` : ""}<br>${esc(p.email)}<br>Type: ${esc(cat)}</p>
+    `<p><strong>${esc(p.name)}</strong>${p.company ? ` (${esc(p.company)})` : ""}<br>${esc(p.email)}<br>Type: ${esc(cat)}${p.regarding ? `<br>Regarding: <strong>${esc(p.regarding)}</strong>` : ""}</p>
      <p style="white-space:pre-wrap;border-left:3px solid #e3a008;padding-left:12px">${esc(p.message)}</p>
      <p><a href="${esc(p.url)}">Open in the admin portal</a></p>`,
   );

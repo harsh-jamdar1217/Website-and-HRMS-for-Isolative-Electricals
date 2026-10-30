@@ -4,7 +4,7 @@ export const ROLES = ["CANDIDATE", "EMPLOYEE", "HR", "ADMIN"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ENQUIRY_CATEGORIES = {
-  PRODUCT: "Product information",
+  PRODUCT: "Product or service information",
   QUOTATION: "Quotation request",
   SUPPORT: "Technical support",
   PARTNERSHIP: "Partnership or supply",

@@ -17,6 +17,7 @@ export const PERMISSIONS = [
   "candidate:manage", // change application status, review documents
   "candidate:documents", // download candidate documents (every download is audited)
   "employee:view",
+  "catalogue:manage", // edit the public products and services pages (administrator only)
   "meeting:view",
   "meeting:manage", // create, reschedule, cancel, send reminders
   "employee:manage", // convert a candidate, edit assignment, tick HR onboarding tasks, complete onboarding

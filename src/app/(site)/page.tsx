@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SheetHero } from "@/components/SheetHero";
 import { company } from "@/content/company";
+import { listPublishedByCategory } from "@/lib/catalogue";
 import { ENQUIRY_CATEGORIES } from "@/lib/status";
 
 const intents = [
@@ -9,14 +10,19 @@ const intents = [
   { key: "SUPPORT", text: "Request technical advice or arrange a site inspection." },
 ] as const;
 
+export const dynamic = "force-dynamic";
+
+const anchorOf = (c: string) => c.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 export default function Home() {
+  const groups = listPublishedByCategory();
   return (
     <>
       <section className="wrap grid items-center gap-10 py-10 md:grid-cols-[5fr_6fr] md:py-16">
         <div>
           <h1 className="text-4xl sm:text-5xl">{company.tagline}</h1>
           <p className="mt-5 max-w-prose text-lg text-steel">
-            {company.legalName} is a private limited company based in Khandala, Satara district, Maharashtra. Send us your requirement and a member of the team will respond by email.
+            {company.legalName} engineers, installs, tests and maintains electrical systems for industrial plants, power plants, and commercial and residential projects. Based in Khandala, Satara district, Maharashtra.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href="/enquiry" className="btn btn-accent no-underline">Send an enquiry</Link>
@@ -25,6 +31,20 @@ export default function Home() {
         </div>
         <SheetHero />
       </section>
+
+      {groups.length > 0 && (
+        <section className="wrap py-10" aria-labelledby="svc">
+          <div className="flex flex-wrap items-end justify-between gap-3"><h2 id="svc" className="text-2xl">What we do</h2><Link href="/products" className="font-semibold">All products and services</Link></div>
+          <ul className="mt-5 grid border-t-2 border-navy sm:grid-cols-2 lg:grid-cols-3">
+            {groups.map((g, i) => (
+              <li key={g.category} className={`border-b border-line bg-white ${i % 3 !== 0 ? "lg:border-l" : ""} ${i % 2 !== 0 ? "sm:max-lg:border-l" : ""}`}>
+                <Link href={`/products#${anchorOf(g.category)}`} className="block h-full p-5 no-underline hover:bg-navy-50">
+                  <h3 className="text-lg">{g.category}</h3>
+                  <ul className="mt-2 space-y-1 text-sm text-steel">{g.items.slice(0, 3).map((it) => <li key={it.id}>{it.title}</li>)}{g.items.length > 3 && <li className="font-semibold text-navy">+ {g.items.length - 3} more</li>}</ul>
+                </Link>
+              </li>))}
+          </ul>
+        </section>)}
 
       <section className="wrap py-10" aria-labelledby="help">
         <h2 id="help" className="text-2xl">What can we help you with?</h2>

@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import { getPublishedBySlug } from "@/lib/catalogue";
 import { ENQUIRY_CATEGORIES } from "@/lib/status";
 import { EnquiryForm } from "./EnquiryForm";
 
 export const metadata: Metadata = { title: "Send an enquiry" };
 
-export default async function EnquiryPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function EnquiryPage({ searchParams }: { searchParams: Promise<{ category?: string; item?: string }> }) {
+  const { category, item } = await searchParams;
+  const chosen = item ? getPublishedBySlug(item) : null;
   const preset = category && category in ENQUIRY_CATEGORIES ? category : "";
   return (
     <div className="wrap grid gap-10 py-12 lg:grid-cols-[2fr_1fr]">
       <div>
         <h1 className="text-4xl">Send an enquiry</h1>
         <p className="mt-3 max-w-prose text-steel">Tell us what you need. You will receive a reference number by email, and our team will reply to the same address.</p>
-        <div className="mt-8 max-w-2xl"><EnquiryForm defaultCategory={preset} /></div>
+        <div className="mt-8 max-w-2xl"><EnquiryForm defaultCategory={chosen ? "QUOTATION" : preset} itemSlug={chosen?.slug} itemTitle={chosen?.title} /></div>
       </div>
       <aside className="h-fit border border-line border-t-2 border-t-navy bg-white p-5 text-sm">
         <h2 className="text-base">Helpful details</h2>

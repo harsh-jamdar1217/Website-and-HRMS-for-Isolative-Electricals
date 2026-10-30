@@ -13,6 +13,7 @@ const nav: { href: string; label: string; perm: Permission; exact?: boolean }[] 
   { href: "/admin/employees", label: "Employees", perm: "employee:view" },
   { href: "/admin/vacancies", label: "Vacancies", perm: "vacancy:manage" },
   { href: "/admin/meetings", label: "Meetings", perm: "meeting:view" },
+  { href: "/admin/catalogue", label: "Products and services", perm: "catalogue:manage" },
   { href: "/admin/enquiries", label: "Enquiries", perm: "enquiry:view" },
   { href: "/admin/clients", label: "Clients", perm: "client:view" },
   { href: "/admin/emails", label: "Email log", perm: "email:view" },
