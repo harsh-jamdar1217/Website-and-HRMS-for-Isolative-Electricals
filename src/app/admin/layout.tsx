@@ -17,7 +17,7 @@ const nav: { href: string; label: string; perm: Permission; exact?: boolean }[] 
   { href: "/admin/enquiries", label: "Enquiries", perm: "enquiry:view" },
   { href: "/admin/clients", label: "Clients", perm: "client:view" },
   { href: "/admin/emails", label: "Email log", perm: "email:view" },
-  { href: "/admin/audit", label: "Audit log", perm: "audit:view" },
+  //{ href: "/admin/audit", label: "Audit log", perm: "audit:view" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
